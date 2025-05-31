@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout android:tag="layout/vod_details_footer_0" android:focusable="true" android:focusableInTouchMode="true" android:descendantFocusability="blocksDescendants" android:layout_width="fill_parent" android:layout_height="wrap_content"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.google.android.material.divider.MaterialDivider android:id="@id/divider" android:layout_width="fill_parent" android:layout_height="2.0dip" android:layout_marginBottom="27.0dip" android:alpha="0.5" android:layout_marginStart="48.0dip" android:layout_marginEnd="48.0dip" app:dividerColor="?colorSurfaceInverse" app:layout_constraintBottom_toTopOf="@id/text" app:layout_constraintTop_toTopOf="parent" />
+    <com.google.android.material.textview.MaterialTextView android:id="@id/text" android:layout_width="0.0dip" android:layout_height="wrap_content" android:lineSpacingExtra="16.0dip" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="@id/divider" app:layout_constraintStart_toStartOf="@id/divider" app:layout_constraintTop_toBottomOf="@id/divider" />
+</androidx.constraintlayout.widget.ConstraintLayout>

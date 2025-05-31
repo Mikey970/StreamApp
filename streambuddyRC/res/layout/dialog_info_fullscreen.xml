@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout android:tag="layout/dialog_info_fullscreen_0" android:clipChildren="false" android:clipToPadding="false" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.appcompat.widget.LinearLayoutCompat android:gravity="center" android:orientation="vertical" android:clipChildren="false" android:clipToPadding="false" android:layout_width="0.0dip" android:layout_height="fill_parent" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent" app:layout_constraintWidth_percent="0.6">
+        <com.google.android.material.imageview.ShapeableImageView android:background="?colorSurfaceContainerHigh" android:layout_width="48.0dip" android:layout_height="48.0dip" android:src="@drawable/ic_info_outlined" android:tint="?colorOnSurface" app:contentPadding="8.0dip" app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full" />
+        <com.google.android.material.textview.MaterialTextView android:id="@id/title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="24.0dip" android:textAlignment="center" style="?textAppearanceHeadlineMedium" />
+        <com.google.android.material.textview.MaterialTextView android:id="@id/body" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="24.0dip" android:alpha="0.8" android:textAlignment="center" style="?textAppearanceBodyLarge" />
+        <androidx.appcompat.widget.LinearLayoutCompat android:gravity="center" android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="32.0dip">
+            <com.google.android.material.button.MaterialButton android:textColor="@color/setting_item_leading_foreground" android:id="@id/submit" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/submit" android:backgroundTint="@color/setting_item_background" />
+            <Space android:layout_width="16.0dip" android:layout_height="wrap_content" />
+            <com.google.android.material.button.MaterialButton android:textColor="@color/setting_item_leading_foreground" android:id="@id/cancel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cancel" android:backgroundTint="@color/setting_item_background" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</androidx.constraintlayout.widget.ConstraintLayout>

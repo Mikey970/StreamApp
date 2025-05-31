@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout android:tag="layout/top_pane_other_sources_0" android:focusable="false" android:focusableInTouchMode="false" android:clipChildren="false" android:clipToPadding="false" android:descendantFocusability="afterDescendants" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <fr.nextv.atv.ui.views.VerticalGrid android:id="@id/grid" android:paddingTop="8.0dip" android:paddingBottom="8.0dip" android:nextFocusUp="@id/tabs" android:clipChildren="false" android:clipToPadding="false" android:layout_width="0.0dip" android:layout_height="fill_parent" android:verticalSpacing="6.0dip" app:focusOutEnd="true" app:focusOutFront="true" app:focusOutSideEnd="true" app:focusOutSideStart="true" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent" app:layout_constraintWidth_percent="0.4" />
+</androidx.constraintlayout.widget.ConstraintLayout>

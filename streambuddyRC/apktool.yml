@@ -1,0 +1,24 @@
+version: 2.11.0
+apkFileName: streambuddyRC.apk
+isFrameworkApk: false
+usesFramework:
+  ids:
+  - 1
+  tag: null
+sdkInfo:
+  minSdkVersion: 21
+  targetSdkVersion: 33
+packageInfo:
+  forcedPackageId: 127
+  renameManifestPackage: null
+versionInfo:
+  versionCode: 40030017
+  versionName: 3.0.17-tv-boxes
+sharedLibrary: false
+sparseResources: false
+compactEntries: false
+doNotCompress:
+- arsc
+- ogg
+- png
+- res/font/roboto_medium_numbers.ttf

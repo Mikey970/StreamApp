@@ -1,0 +1,33 @@
+.class public final Lh4/o1;
+.super Lh4/e0;
+.source "SourceFile"
+
+
+# instance fields
+.field public m:Lh4/k0;
+
+.field public n:Lh4/k0;
+
+.field public o:Lh4/k0;
+
+.field public p:Lh4/k0;
+
+
+# direct methods
+.method public constructor <init>()V
+    .locals 0
+
+    invoke-direct {p0}, Lh4/e0;-><init>()V
+
+    return-void
+.end method
+
+
+# virtual methods
+.method public final o()Ljava/lang/String;
+    .locals 1
+
+    const-string v0, "linearGradient"
+
+    return-object v0
+.end method
