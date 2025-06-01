@@ -96,19 +96,21 @@
     invoke-interface {v1, v2, v0}, Landroid/content/SharedPreferences$Editor;->putString(Ljava/lang/String;Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
 
     .line 10
-    invoke-interface {v1}, Landroid/content/SharedPreferences$Editor;->apply()V
+    # Using commit() instead of apply() for this test
+    invoke-interface {v1}, Landroid/content/SharedPreferences$Editor;->commit()Z # Boolean result is ignored
 
-    # Dialog dismiss REMOVED for this test
-    # invoke-interface {p1}, Landroid/content/DialogInterface;->dismiss()V
+    .line 11
+    # Dialog dismiss should be PRESENT
+    invoke-interface {p1}, Landroid/content/DialogInterface;->dismiss()V
 
-    # Call to continueWithAppLogic REMOVED for this test
+    # Call to continueWithAppLogic remains REMOVED
     # iget-object v1, p0, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$2;->this$0:Lcom/rtx/nextvproject/RTX/UI/SplashRTX;
     # const/4 v2, 0x0 # null for Bundle argument
     # invoke-direct {v1, v2}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->continueWithAppLogic(Landroid/os/Bundle;)V
 
-    # ADDED finish() call to isolate SharedPreferences save
-    iget-object v1, p0, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$2;->this$0:Lcom/rtx/nextvproject/RTX/UI/SplashRTX;
-    invoke-virtual {v1}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->finish()V
+    # finish() call (from previous diag step) also remains REMOVED from this path
+    # iget-object v1, p0, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$2;->this$0:Lcom/rtx/nextvproject/RTX/UI/SplashRTX;
+    # invoke-virtual {v1}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->finish()V
 
     goto :goto_0
 .end method
