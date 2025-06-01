@@ -36,7 +36,7 @@
     # v10: final_response_string / temp for static error strings
     # v12: exception_object (for catch blocks)
 
-    const-string v0, "http://your_domain_or_ip:5001/api/check_device_status?deviceId="
+    const-string v0, "http://10.0.2.2:5001/api/check_device_status?deviceId="
 
     move-object v4, v11 # Initialize http_connection to null
     move-object v7, v11 # Initialize buffered_reader to null
