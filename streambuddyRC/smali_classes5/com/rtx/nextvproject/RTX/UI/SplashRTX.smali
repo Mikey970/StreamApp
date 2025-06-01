@@ -6,7 +6,8 @@
 # annotations
 .annotation system Ldalvik/annotation/MemberClasses;
     value = {
-        Lcom/rtx/nextvproject/RTX/UI/SplashRTX$HttpsGetTask;
+        Lcom/rtx/nextvproject/RTX/UI/SplashRTX$ActivationTask;,
+        Lcom/rtx/nextvproject/RTX/UI/SplashRTX$HttpsGetTask; # Re-added HttpsGetTask
     }
 .end annotation
 
@@ -26,6 +27,9 @@
             ">;"
         }
     .end annotation
+.end field
+
+.field private static sIsDeviceActivatedByOwnServer:Z
 .end field
 
 
@@ -49,6 +53,9 @@
     const-string v0, ""
 
     sput-object v0, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->_qgdrndckndjdkde:Ljava/lang/String;
+
+    const/4 v0, 0x0
+    sput-boolean v0, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->sIsDeviceActivatedByOwnServer:Z
 
     return-void
 .end method
@@ -98,6 +105,42 @@
     const-string v1, "Error !"
 
     return-object v1
+.end method
+
+.method public static proceedWithOriginalStartup(Landroid/content/Context;)V
+    .locals 4
+    .param p0, "context"    # Landroid/content/Context;
+
+    const/4 v0, 0x1
+    sput-boolean v0, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->sIsDeviceActivatedByOwnServer:Z
+
+    move-object v0, p0
+    check-cast v0, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;
+
+    new-instance v1, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$HttpsGetTask;
+    const/4 v2, 0x0
+    invoke-direct {v1, v0, v2}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$HttpsGetTask;-><init>(Lcom/rtx/nextvproject/RTX/UI/SplashRTX;Lcom/rtx/nextvproject/RTX/UI/SplashRTX$1;)V
+
+    const/4 v2, 0x1
+    new-array v2, v2, [Ljava/lang/String;
+
+    new-instance v3, Ljava/lang/StringBuilder;
+    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
+    sget-object p0, Lcom/rtx/nextvproject/RTX/mConfig;->mApiUrl:Ljava/lang/String;
+    invoke-virtual {v3, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    const-string p0, "api/dns.php"
+    invoke-virtual {v3, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v3}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object p0
+
+    const/4 v3, 0x0
+    aput-object p0, v2, v3
+
+    invoke-virtual {v1, v2}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$HttpsGetTask;->execute([Ljava/lang/Object;)Landroid/os/AsyncTask;
+
+    invoke-virtual {v0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->downImage()V
+
+    return-void
 .end method
 
 
@@ -167,43 +210,106 @@
 
     sput-object v0, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->_qgdrndckndjdkde:Ljava/lang/String;
 
-    .line 46
-    new-instance v0, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$HttpsGetTask;
+    # Get ConnectivityManager
+    const-string v0, "connectivity"
+    invoke-virtual {p0, v0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->getSystemService(Ljava/lang/String;)Ljava/lang/Object;
+    move-result-object v0
+    check-cast v0, Landroid/net/ConnectivityManager;
 
-    const/4 v1, 0x0
+    # Get active NetworkInfo
+    invoke-virtual {v0}, Landroid/net/ConnectivityManager;->getActiveNetworkInfo()Landroid/net/NetworkInfo;
+    move-result-object v0
 
-    invoke-direct {v0, p0, v1}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$HttpsGetTask;-><init>(Lcom/rtx/nextvproject/RTX/UI/SplashRTX;Lcom/rtx/nextvproject/RTX/UI/SplashRTX$1;)V
+    if-eqz v0, :cond_wifi_settings # If networkInfo is null, jump to wifi settings
+    invoke-virtual {v0}, Landroid/net/NetworkInfo;->isConnected()Z
+    move-result v0
+    if-nez v0, :cond_skip_wifi_settings # If not connected, jump to wifi settings
 
-    const/4 v1, 0x1
+cond_wifi_settings:
+    # Show Toast
+    const-string v0, "No Wi-Fi connection. Please set up Wi-Fi."
+    const/4 v1, 0x1 # Toast.LENGTH_LONG
+    invoke-static {p0, v0, v1}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
+    move-result-object v0
+    invoke-virtual {v0}, Landroid/widget/Toast;->show()V
 
-    new-array v1, v1, [Ljava/lang/String;
+    # Create Intent for Wi-Fi settings
+    new-instance v0, Landroid/content/Intent;
+    const-string v1, "android.provider.Settings.ACTION_WIFI_SETTINGS"
+    invoke-direct {v0, v1}, Landroid/content/Intent;-><init>(Ljava/lang/String;)V
 
-    new-instance v2, Ljava/lang/StringBuilder;
+    # Add FLAG_ACTIVITY_NEW_TASK
+    const/high16 v1, 0x10000000
+    invoke-virtual {v0, v1}, Landroid/content/Intent;->addFlags(I)Landroid/content/Intent;
 
-    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+    # Start Wi-Fi settings activity
+    invoke-virtual {p0, v0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->startActivity(Landroid/content/Intent;)V
 
-    sget-object v3, Lcom/rtx/nextvproject/RTX/mConfig;->mApiUrl:Ljava/lang/String;
+    # Return void
+    return-void
 
-    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+cond_skip_wifi_settings:
+    # Continue with original onCreate code
 
-    const-string v3, "api/dns.php"
+    # Get SharedPreferences
+    const-string v0, "device_prefs"
+    const/4 v1, 0x0 # Context.MODE_PRIVATE
+    invoke-virtual {p0, v0, v1}, Landroid/app/Activity;->getSharedPreferences(Ljava/lang/String;I)Landroid/content/SharedPreferences;
+    move-result-object v0 # v_shared_prefs
 
-    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    # Retrieve Device ID
+    const-string v1, "device_unique_id"
+    const/4 v2, 0x0 # null string
+    invoke-interface {v0, v1, v2}, Landroid/content/SharedPreferences;->getString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1 # v_retrieved_device_id (this will be the final device_id register)
 
-    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    # Check if Device ID is Null
+    if-nez v1, :label_device_id_exists
 
-    move-result-object v2
+    # If Device ID is Null (Generate and Store)
+    invoke-static {}, Ljava/util/UUID;->randomUUID()Ljava/util/UUID;
+    move-result-object v2 # v_uuid
+    invoke-virtual {v2}, Ljava/util/UUID;->toString()Ljava/lang/String;
+    move-result-object v1 # v_new_device_id, stored in v1
 
-    const/4 v3, 0x0
+    # Get SharedPreferences.Editor
+    invoke-interface {v0}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
+    move-result-object v2 # v_editor
 
-    aput-object v2, v1, v3
+    # Store the new ID
+    const-string v3, "device_unique_id"
+    invoke-interface {v2, v3, v1}, Landroid/content/SharedPreferences$Editor;->putString(Ljava/lang/String;Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
 
-    invoke-virtual {v0, v1}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$HttpsGetTask;->execute([Ljava/lang/Object;)Landroid/os/AsyncTask;
+    # Commit
+    invoke-interface {v2}, Landroid/content/SharedPreferences$Editor;->apply()V
 
-    .line 47
-    invoke-virtual {p0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->downImage()V
+label_device_id_exists:
+    # The device ID is now in v1 (either retrieved or newly generated).
+    # This register v1 now holds the device_id for subsequent operations.
+    # For example, it could be passed to a method or stored in a static field.
+    # sget-object v2, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->someStaticField:Ljava/lang/String;
+    # iput-object v1, v2 Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->someStaticField:Ljava/lang/String;
 
-    .line 49
+    # --- Start ActivationTask ---
+    # v1 currently holds the deviceIdString from label_device_id_exists
+    new-instance v0, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$ActivationTask;
+    invoke-direct {v0, p0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$ActivationTask;-><init>(Lcom/rtx/nextvproject/RTX/UI/SplashRTX;)V # p0 is 'this' SplashRTX
+
+    const/4 v2, 0x1 # Using v2 as v0 is task, v1 is deviceId
+    new-array v2, v2, [Ljava/lang/String; # params array
+
+    const/4 v3, 0x0 # index for params array
+    aput-object v1, v2, v3 # put deviceId (from v1) into params[0]
+
+    invoke-virtual {v0, v2}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$ActivationTask;->execute([Ljava/lang/Object;)Landroid/os/AsyncTask;
+    # --- End ActivationTask ---
+
+    # Original HttpsGetTask and downImage() call removed as per subtask.
+    # The ActivationTask is responsible for navigation or finishing the activity.
+    # If ActivationTask was not guaranteed to finish SplashRTX, we might need a return-void here.
+    # However, onPostExecute of ActivationTask always finishes SplashRTX.
+    .line 49 # This line number might need adjustment or removal if it causes confusion.
+              # Keeping it to signify the original end of this logical block.
     return-void
 .end method
 

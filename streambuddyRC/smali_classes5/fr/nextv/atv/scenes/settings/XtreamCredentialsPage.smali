@@ -1353,14 +1353,60 @@
 
 # virtual methods
 .method public final e0(Lcf/d;)Ljava/lang/Object;
-    .locals 13
+    .locals 13 # May need adjustment if new locals exceed this
 
-    move-object/from16 v9, p0
+    move-object/from16 v9, p0 # p0 is 'this' (v_this)
+    move-object/from16 v10, p1 # p1 is $completion
 
-    move-object/from16 v10, p1
+    # NEW CODE START
+    .local v0, context:Landroid/content/Context;
+    .local v1, sharedPrefs:Landroid/content/SharedPreferences;
+    .local v2, sourceType:Ljava/lang/String;
+    .local v3, xtreamUser:Ljava/lang/String;
+    .local v4, xtreamPass:Ljava/lang/String;
+    # v5, v6, v7 can be used for temp strings/consts
+
+    invoke-virtual {v9}, Landroidx/fragment/app/Fragment;->getContext()Landroid/content/Context;
+    move-result-object v0
+
+    if-eqz v0, :skip_prefs_load_label # Null check for context
+
+    const-string v5, "device_prefs"
+    const/4 v6, 0x0 # MODE_PRIVATE
+    invoke-virtual {v0, v5, v6}, Landroid/content/Context;->getSharedPreferences(Ljava/lang/String;I)Landroid/content/SharedPreferences;
+    move-result-object v1
+
+    const-string v5, "content_source_type"
+    const/4 v6, 0x0 # null string default
+    invoke-interface {v1, v5, v6}, Landroid/content/SharedPreferences;->getString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v2
+
+    const-string v5, "xtream"
+    invoke-static {v2, v5}, Lic/z;->a(Ljava/lang/Object;Ljava/lang/Object;)Z
+    move-result v5
+
+    if-eqz v5, :skip_prefs_load_label
+
+    const-string v5, "content_xtream_user"
+    invoke-interface {v1, v5, v6}, Landroid/content/SharedPreferences;->getString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v3
+
+    if-eqz v3, :skip_pass_load_label # If user is null, don't set it
+    iput-object v3, v9, Lfr/nextv/atv/scenes/settings/XtreamCredentialsPage;->E0:Ljava/lang/String;
+
+:skip_pass_load_label
+    const-string v5, "content_xtream_password"
+    invoke-interface {v1, v5, v6}, Landroid/content/SharedPreferences;->getString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v4
+
+    if-eqz v4, :skip_prefs_load_label
+    iput-object v4, v9, Lfr/nextv/atv/scenes/settings/XtreamCredentialsPage;->F0:Ljava/lang/String;
+
+:skip_prefs_load_label
+    # NEW CODE END
 
     .line 1
-    const/4 v10, 0x5
+    const/4 v10, 0x5 # Original first line of the method's code block
 
     .line 2
     new-array v10, v10, [Lsb/m6;
