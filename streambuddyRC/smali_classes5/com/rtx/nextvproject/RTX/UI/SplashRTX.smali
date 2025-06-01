@@ -329,8 +329,8 @@
 
     invoke-virtual {v0, v1}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$HttpsGetTask;->execute([Ljava/lang/Object;)Landroid/os/AsyncTask;
 
-    # Call downImage
-    invoke-virtual {p0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->downImage()V
+    # Call downImage - Temporarily REMOVED for diagnostics
+    # invoke-virtual {p0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->downImage()V
 
     return-void
 .end method
