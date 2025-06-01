@@ -36,8 +36,6 @@
     # v10: final_response_string / temp for static error strings
     # v12: exception_object (for catch blocks)
 
-    .locals 13 # Corrected .locals declaration
-
     const-string v0, "http://your_domain_or_ip:5001/api/check_device_status?deviceId="
 
     move-object v4, v11 # Initialize http_connection to null
