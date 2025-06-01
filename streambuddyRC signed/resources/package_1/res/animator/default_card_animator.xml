@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+  <item android:state_focused="false">
+    <set>
+      <objectAnimator android:duration="@android:integer/config_shortAnimTime"
+                      android:valueTo="1"
+                      android:valueType="floatType"
+                      android:propertyName="scaleY" />
+      <objectAnimator android:duration="@android:integer/config_shortAnimTime"
+                      android:valueTo="1"
+                      android:valueType="floatType"
+                      android:propertyName="scaleX" />
+    </set>
+  </item>
+  <item android:state_focused="true"
+        android:state_pressed="false">
+    <set>
+      <objectAnimator android:duration="@android:integer/config_shortAnimTime"
+                      android:valueTo="1.05"
+                      android:valueType="floatType"
+                      android:propertyName="scaleY" />
+      <objectAnimator android:duration="@android:integer/config_shortAnimTime"
+                      android:valueTo="1.05"
+                      android:valueType="floatType"
+                      android:propertyName="scaleX" />
+    </set>
+  </item>
+  <item android:state_focused="true"
+        android:state_pressed="true">
+    <set>
+      <objectAnimator android:duration="@android:integer/config_shortAnimTime"
+                      android:valueTo="0.95"
+                      android:valueType="floatType"
+                      android:propertyName="scaleY" />
+      <objectAnimator android:duration="@android:integer/config_shortAnimTime"
+                      android:valueTo="0.95"
+                      android:valueType="floatType"
+                      android:propertyName="scaleX" />
+    </set>
+  </item>
+</selector>

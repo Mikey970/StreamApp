@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<androidx.appcompat.widget.LinearLayoutCompat android:gravity="center"
+                      android:tag="layout/slider_button_0"
+                      android:duplicateParentState="true"
+                      android:layout_width="fill_parent"
+                      android:layout_height="fill_parent"
+                      android:paddingStart="8.0dp"
+                      android:paddingEnd="8.0dp" xmlns:android="http://schemas.android.com/apk/res/android">
+  <androidx.appcompat.widget.AppCompatImageView android:id="@id/left"
+                        android:duplicateParentState="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_arrow_left"
+                        android:tint="@color/elevated_button_fg" />
+  <com.google.android.material.textview.MaterialTextView android:textColor="@color/elevated_button_fg"
+                        android:id="@id/id_0x7f0b032d"
+                        android:duplicateParentState="true"
+                        android:layout_width="0.0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.0"
+                        android:textAlignment="center"
+                        android:layout_marginStart="20.0dp"
+                        android:layout_marginEnd="20.0dp" />
+  <androidx.appcompat.widget.AppCompatImageView android:id="@id/right"
+                        android:duplicateParentState="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_arrow_right"
+                        android:tint="@color/elevated_button_fg" />
+</androidx.appcompat.widget.LinearLayoutCompat>

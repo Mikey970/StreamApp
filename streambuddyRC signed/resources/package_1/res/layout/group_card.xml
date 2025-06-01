@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<com.google.android.material.card.MaterialCardView android:id="@id/root"
+                      android:tag="layout/group_card_0"
+                      android:focusable="true"
+                      android:focusableInTouchMode="true"
+                      android:descendantFocusability="blocksDescendants"
+                      android:layout_width="fill_parent"
+                      android:layout_height="wrap_content"
+                      app:cardElevation="0.0dp"
+                      app:cardMaxElevation="0.0dp"
+                      app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Small"
+                      app:strokeWidth="0.0dp" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+  <com.google.android.material.textview.MaterialTextView android:textAppearance="?attr/textAppearanceLabelLarge"
+                        android:textColor="@color/setting_item_leading_foreground"
+                        android:ellipsize="marquee"
+                        android:gravity="center_vertical"
+                        android:id="@id/leading"
+                        android:padding="16.0dp"
+                        android:focusable="true"
+                        android:duplicateParentState="true"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true" />
+</com.google.android.material.card.MaterialCardView>

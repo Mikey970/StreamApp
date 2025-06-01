@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<com.google.android.material.textview.MaterialTextView android:id="@id/root"
+                      android:tag="layout/settings_caption_0"
+                      android:layout_width="fill_parent"
+                      android:layout_height="wrap_content"
+                      android:layout_marginStart="16.0dp"
+                      android:layout_marginEnd="16.0dp"
+                      style="?attr/textAppearanceBodySmall" xmlns:android="http://schemas.android.com/apk/res/android" />

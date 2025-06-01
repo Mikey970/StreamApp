@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>QR Code Styling</title>
+    <script type="text/javascript"
+            src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+</head>
+<body style="margin: 0; padding: 0; background-color: #313033">
+<div id="canvas"></div>
+<script type="text/javascript">
+
+    function loadZer(data) {
+        let qrCode = new QRCodeStyling({
+            width: window.innerWidth,
+            height: window.innerHeight,
+            type: "svg",
+            data: data,
+            dotsOptions: {
+                color: "#FFFFFF",
+                type: "rounded"
+            },
+            backgroundOptions: {
+                color: "#313033"
+            },
+            imageOptions: {
+                crossOrigin: "anonymous",
+                margin: 20
+            }
+        });
+        qrCode.append(document.getElementById("canvas"));
+        qrCode.download({ name: "qr", extension: "svg" });
+    }
+
+</script>
+</body>
+</html>
+
+

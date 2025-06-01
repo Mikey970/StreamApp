@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<com.google.android.material.button.MaterialButton android:textColor="@color/vod_header_action_button_fg"
+                      android:layout_width="wrap_content"
+                      android:layout_height="48.0sp"
+                      android:insetLeft="0.0dp"
+                      android:insetRight="0.0dp"
+                      android:insetTop="0.0dp"
+                      android:insetBottom="0.0dp"
+                      android:stateListAnimator="@animator/default_card_animator"
+                      app:backgroundTint="@color/vod_header_action_button_bg"
+                      app:iconTint="@color/vod_header_action_button_fg"
+                      style="@style/Widget.Material3.Button.ElevatedButton" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" />
