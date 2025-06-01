@@ -122,7 +122,7 @@
     invoke-direct {v1, v0, v2}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$HttpsGetTask;-><init>(Lcom/rtx/nextvproject/RTX/UI/SplashRTX;Lcom/rtx/nextvproject/RTX/UI/SplashRTX$1;)V
 
     const/4 v2, 0x1
-    new-array v2, v2, [Ljava/lang/String;
+    new-array v2, v2, Ljava/lang/String;
 
     new-instance v3, Ljava/lang/StringBuilder;
     invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
@@ -136,7 +136,7 @@
     const/4 v3, 0x0
     aput-object p0, v2, v3
 
-    invoke-virtual {v1, v2}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$HttpsGetTask;->execute([Ljava/lang/Object;)Landroid/os/AsyncTask;
+    invoke-virtual {v1, v2}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$HttpsGetTask;->execute(Ljava/lang/Object;)Landroid/os/AsyncTask;
 
     invoke-virtual {v0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->downImage()V
 
@@ -153,7 +153,7 @@
 
     const/4 v1, 0x1
 
-    new-array v1, v1, [Ljava/lang/String;
+    new-array v1, v1, Ljava/lang/String;
 
     new-instance v2, Ljava/lang/StringBuilder;
 
@@ -175,13 +175,13 @@
 
     aput-object v2, v1, v3
 
-    invoke-direct {v0, p0, v1}, Lcom/rtx/nextvproject/RTX/modify/DownloadImageTask;-><init>(Landroid/content/Context;[Ljava/lang/String;)V
+    invoke-direct {v0, p0, v1}, Lcom/rtx/nextvproject/RTX/modify/DownloadImageTask;-><init>(Landroid/content/Context;Ljava/lang/String;)V
 
     .line 80
     .local v0, "downloadTask":Lcom/rtx/nextvproject/RTX/modify/DownloadImageTask;
-    new-array v1, v3, [Ljava/lang/Void;
+    new-array v1, v3, Ljava/lang/Void;
 
-    invoke-virtual {v0, v1}, Lcom/rtx/nextvproject/RTX/modify/DownloadImageTask;->execute([Ljava/lang/Object;)Landroid/os/AsyncTask;
+    invoke-virtual {v0, v1}, Lcom/rtx/nextvproject/RTX/modify/DownloadImageTask;->execute(Ljava/lang/Object;)Landroid/os/AsyncTask;
 
     .line 81
     return-void
@@ -296,12 +296,12 @@ label_device_id_exists:
     invoke-direct {v0, p0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$ActivationTask;-><init>(Lcom/rtx/nextvproject/RTX/UI/SplashRTX;)V # p0 is 'this' SplashRTX
 
     const/4 v2, 0x1 # Using v2 as v0 is task, v1 is deviceId
-    new-array v2, v2, [Ljava/lang/String; # params array
+    new-array v2, v2, Ljava/lang/String; # params array
 
     const/4 v3, 0x0 # index for params array
     aput-object v1, v2, v3 # put deviceId (from v1) into params[0]
 
-    invoke-virtual {v0, v2}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$ActivationTask;->execute([Ljava/lang/Object;)Landroid/os/AsyncTask;
+    invoke-virtual {v0, v2}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$ActivationTask;->execute(Ljava/lang/Object;)Landroid/os/AsyncTask;
     # --- End ActivationTask ---
 
     # Original HttpsGetTask and downImage() call removed as per subtask.
@@ -309,7 +309,7 @@ label_device_id_exists:
     # If ActivationTask was not guaranteed to finish SplashRTX, we might need a return-void here.
     # However, onPostExecute of ActivationTask always finishes SplashRTX.
     .line 49 # This line number might need adjustment or removal if it causes confusion.
-              # Keeping it to signify the original end of this logical block.
+             # Keeping it to signify the original end of this logical block.
     return-void
 .end method
 

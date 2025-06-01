@@ -28,17 +28,17 @@
 .end method
 
 # virtual methods
-.method protected bridge synthetic doInBackground([Ljava/lang/Object;)Ljava/lang/Object;
+.method protected bridge synthetic doInBackground(Ljava/lang/Object;)Ljava/lang/Object;
     .locals 0
-    check-cast p1, [Ljava/lang/String;
-    invoke-virtual {p0, p1}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$ActivationTask;->doInBackground([Ljava/lang/String;)Ljava/lang/String;
+    check-cast p1, Ljava/lang/String;
+    invoke-virtual {p0, p1}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$ActivationTask;->doInBackground(Ljava/lang/String;)Ljava/lang/String;
     move-result-object p1
     return-object p1
 .end method
 
-.method protected varargs doInBackground([Ljava/lang/String;)Ljava/lang/String;
+.method protected varargs doInBackground(Ljava/lang/String;)Ljava/lang/String;
     .locals 6
-    .param p1, "params"    # [Ljava/lang/String;
+    .param p1, "params"    # Ljava/lang/String;
 
     const/4 v0, 0x0
     aget-object v1, p1, v0 # deviceId
@@ -332,4 +332,3 @@
     return-void
 .end method
 
-```
