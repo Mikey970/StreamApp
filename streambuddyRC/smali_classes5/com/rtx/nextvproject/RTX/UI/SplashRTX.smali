@@ -244,21 +244,21 @@
     # invoke-static {v3, v4}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
     invoke-virtual {p0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->finish()V
     return-void
-    .catch Ljava/lang/Exception; {:try_start_check_status .. :try_end_check_status} :catch_status_exception
 
     :cond_local_check_ok_startup
     # Status is active, proceed to launch TvActivity
     new-instance v2, Landroid/content/Intent; # v2 is now new Intent (reusing register)
-    .catch Ljava/lang/Exception; {:try_start_check_status .. :try_end_check_status} :catch_status_exception
     # p0 is context
     const-class v3, Lfr/nextv/atv/app/TvActivity; # v3 is now TvActivity.class
     invoke-direct {v2, p0, v3}, Landroid/content/Intent;-><init>(Landroid/content/Context;Ljava/lang/Class;)V
 
     invoke-virtual {p0, v2}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->startActivity(Landroid/content/Intent;)V
     invoke-virtual {p0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->finish()V
+    :try_end_check_status
 
     return-void
 
+    .catch Ljava/lang/Exception; {:try_start_check_status .. :try_end_check_status} :catch_status_exception
     :catch_status_exception
     move-exception v0 # Using v0 for exception as other locals might be in use by try block
     # Log error (conceptual)
