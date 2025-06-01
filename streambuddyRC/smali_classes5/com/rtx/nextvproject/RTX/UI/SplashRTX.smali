@@ -204,10 +204,14 @@
     return-void
 
 :cond_proceed_original_logic
-    # Call method to continue with original app logic - REMOVED for diagnostics
-    # invoke-direct {p0, p1}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->continueWithAppLogic(Landroid/os/Bundle;)V
+    # Restoring call to continueWithAppLogic, but with a null Bundle argument.
+    # p0 is 'this' SplashRTX instance.
+    # p1 is the original Bundle from onCreate, which we are NOT passing here.
 
-    # For diagnostic purposes, if device_id is found, just return.
+    const/4 v3, 0x0 # Using v3 for the null Bundle argument. .locals 5 is defined for the method.
+
+    invoke-direct {p0, v3}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->continueWithAppLogic(Landroid/os/Bundle;)V
+
     return-void
 .end method
 
