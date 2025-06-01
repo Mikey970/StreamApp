@@ -329,7 +329,7 @@
 .end method
 
 .method private continueWithAppLogic(Landroid/os/Bundle;)V
-    .locals 3
+    .locals 4 # Increased to 4 for v3
     .param p1, "savedInstanceState"    # Landroid/os/Bundle;
 
     # This method contains the original logic from onCreate
@@ -355,18 +355,19 @@
 
     invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
 
-    sget-object v_temp, Lcom/rtx/nextvproject/RTX/mConfig;->mApiUrl:Ljava/lang/String; # Use temp to avoid issues with static field access in diff
-    invoke-virtual {v2, v_temp}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    sget-object v3, Lcom/rtx/nextvproject/RTX/mConfig;->mApiUrl:Ljava/lang/String; # Using v3 for mApiUrl
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v2 # Re-assign to v2 as append returns the builder
 
-    const-string v_temp_2, "api/dns.php" # Use temp
-    invoke-virtual {v2, v_temp_2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    const-string v3, "api/dns.php" # Using v3 for "api/dns.php" string
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v2 # Re-assign to v2
 
     invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v2 # v2 now holds the final URL string
 
-    move-result-object v2
-
-    const/4 v_temp_3, 0x0 # Use temp
-    aput-object v2, v1, v_temp_3
+    const/4 v3, 0x0 # Using v3 for the integer 0 (array index)
+    aput-object v2, v1, v3 # Store final URL string (v2) into String array (v1) at index 0 (v3)
 
     invoke-virtual {v0, v1}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$HttpsGetTask;->execute([Ljava/lang/Object;)Landroid/os/AsyncTask;
 
