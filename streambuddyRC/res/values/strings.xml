@@ -60,6 +60,7 @@
     <string name="call_notification_ongoing_text">Ongoing call</string>
     <string name="call_notification_screening_text">Screening an incoming call</string>
     <string name="cancel">Cancel</string>
+    <string name="button_save">Save</string>
     <string name="categories">Categories</string>
     <string name="channel_added_to_group">Channel added to group</string>
     <string name="channel_details">Channel details</string>
@@ -96,6 +97,9 @@
     <string name="copy_toast_msg">Link copied to clipboard</string>
     <string name="create_a_new_group">Create a new group</string>
     <string name="customize_your_experience">Customize your experience</string>
+    <string name="device_id_input_hint">Enter Device ID</string>
+    <string name="device_id_popup_message">Please enter a unique device ID for this device.</string>
+    <string name="device_id_popup_title">Set Device ID</string>
     <string name="date">Date</string>
     <string name="day">Day</string>
     <string name="death_date">Death: %1$s</string>
@@ -412,6 +416,8 @@ Your purchases will never be lost, you can always link them to only one account 
     <string name="select_all">Select all</string>
     <string name="series">Series</string>
     <string name="settings">Settings</string>
+    <string name="settings_device_id_summary">View or change the device ID</string>
+    <string name="settings_device_id_title">Device ID</string>
     <string name="show_bottom_pane">Show bottom pane</string>
     <string name="show_channel_explorer">Show channel explorer</string>
     <string name="show_channel_grid">Show channel grid</string>
