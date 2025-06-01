@@ -40,7 +40,7 @@
 
 # virtual methods
 .method public onClick(Landroid/content/DialogInterface;I)V
-    .locals 4
+    .locals 6
 
     .prologue
     .line 1
@@ -142,13 +142,11 @@
     iget-object v0, p0, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$2;->this$0:Lcom/rtx/nextvproject/RTX/UI/SplashRTX;
     invoke-virtual {v0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->finish()V
     goto :goto_0 # Jump to common return
-    .catch Ljava/lang/Exception; {:try_start_check_status_dialog .. :try_end_check_status_dialog} :catch_status_exception_dialog
 
     :cond_local_check_ok_dialog
     # Status is active, proceed to launch TvActivity
     # v1 still holds SplashRTX context
     new-instance v2, Landroid/content/Intent; # v2 is new Intent (reusing register)
-    .catch Ljava/lang/Exception; {:try_start_check_status_dialog .. :try_end_check_status_dialog} :catch_status_exception_dialog
     const-class v3, Lfr/nextv/atv/app/TvActivity; # v3 is TvActivity.class
     invoke-direct {v2, v1, v3}, Landroid/content/Intent;-><init>(Landroid/content/Context;Ljava/lang/Class;)V
 
@@ -158,7 +156,9 @@
     # v1 still SplashRTX context
     invoke-virtual {v1}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->finish()V
     # ---- END OF DEVICE ID CHECK & TVActivity LAUNCH ----
+    :try_end_check_status_dialog
     goto :goto_0
+    .catch Ljava/lang/Exception; {:try_start_check_status_dialog .. :try_end_check_status_dialog} :catch_status_exception_dialog
 
     :catch_status_exception_dialog
     move-exception v5 # Store exception
