@@ -248,68 +248,7 @@ cond_wifi_settings:
     # Return void
     return-void
 
-cond_skip_wifi_settings:
-    # Continue with original onCreate code
 
-    # Get SharedPreferences
-    const-string v0, "device_prefs"
-    const/4 v1, 0x0 # Context.MODE_PRIVATE
-    invoke-virtual {p0, v0, v1}, Landroid/app/Activity;->getSharedPreferences(Ljava/lang/String;I)Landroid/content/SharedPreferences;
-    move-result-object v0 # v_shared_prefs
-
-    # Retrieve Device ID
-    const-string v1, "device_unique_id"
-    const/4 v2, 0x0 # null string
-    invoke-interface {v0, v1, v2}, Landroid/content/SharedPreferences;->getString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-    move-result-object v1 # v_retrieved_device_id (this will be the final device_id register)
-
-    # Check if Device ID is Null
-    if-nez v1, :label_device_id_exists
-
-    # If Device ID is Null (Generate and Store)
-    invoke-static {}, Ljava/util/UUID;->randomUUID()Ljava/util/UUID;
-    move-result-object v2 # v_uuid
-    invoke-virtual {v2}, Ljava/util/UUID;->toString()Ljava/lang/String;
-    move-result-object v1 # v_new_device_id, stored in v1
-
-    # Get SharedPreferences.Editor
-    invoke-interface {v0}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
-    move-result-object v2 # v_editor
-
-    # Store the new ID
-    const-string v3, "device_unique_id"
-    invoke-interface {v2, v3, v1}, Landroid/content/SharedPreferences$Editor;->putString(Ljava/lang/String;Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
-
-    # Commit
-    invoke-interface {v2}, Landroid/content/SharedPreferences$Editor;->apply()V
-
-label_device_id_exists:
-    # The device ID is now in v1 (either retrieved or newly generated).
-    # This register v1 now holds the device_id for subsequent operations.
-    # For example, it could be passed to a method or stored in a static field.
-    # sget-object v2, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->someStaticField:Ljava/lang/String;
-    # iput-object v1, v2 Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->someStaticField:Ljava/lang/String;
-
-    # --- Start ActivationTask ---
-    # v1 currently holds the deviceIdString from label_device_id_exists
-    new-instance v0, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$ActivationTask;
-    invoke-direct {v0, p0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$ActivationTask;-><init>(Lcom/rtx/nextvproject/RTX/UI/SplashRTX;)V # p0 is 'this' SplashRTX
-
-    const/4 v2, 0x1 # Using v2 as v0 is task, v1 is deviceId
-    new-array v2, v2, Ljava/lang/String; # params array
-
-    const/4 v3, 0x0 # index for params array
-    aput-object v1, v2, v3 # put deviceId (from v1) into params[0]
-
-    invoke-virtual {v0, v2}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$ActivationTask;->execute(Ljava/lang/Object;)Landroid/os/AsyncTask;
-    # --- End ActivationTask ---
-
-    # Original HttpsGetTask and downImage() call removed as per subtask.
-    # The ActivationTask is responsible for navigation or finishing the activity.
-    # If ActivationTask was not guaranteed to finish SplashRTX, we might need a return-void here.
-    # However, onPostExecute of ActivationTask always finishes SplashRTX.
-    .line 49 # This line number might need adjustment or removal if it causes confusion.
-             # Keeping it to signify the original end of this logical block.
     return-void
 .end method
 
