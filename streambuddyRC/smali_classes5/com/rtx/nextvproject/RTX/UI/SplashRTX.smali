@@ -204,8 +204,10 @@
     return-void
 
 :cond_proceed_original_logic
-    # Call method to continue with original app logic
-    invoke-direct {p0, p1}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->continueWithAppLogic(Landroid/os/Bundle;)V
+    # Call method to continue with original app logic - REMOVED for diagnostics
+    # invoke-direct {p0, p1}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->continueWithAppLogic(Landroid/os/Bundle;)V
+
+    # For diagnostic purposes, if device_id is found, just return.
     return-void
 .end method
 
