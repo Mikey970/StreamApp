@@ -204,12 +204,35 @@
     return-void
 
 :cond_proceed_original_logic
-    # If device_id is found, call continueWithAppLogic with a null Bundle.
-    # p0 is 'this' (SplashRTX instance).
-    # .locals 5 is defined for the method. v0,v1,v2 used for SP. v3 for null.
+    # If device_id is found (in v1), directly check its status and proceed.
+    # p0 is SplashRTX context. v1 is deviceIdString.
+    # .locals 5 is defined. v0,v1,v2 used for SP. v2,v3,v4 available for use here.
 
-    const/4 v3, 0x0 # Using v3 for the null Bundle argument.
-    invoke-direct {p0, v3}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->continueWithAppLogic(Landroid/os/Bundle;)V
+    # Call DeviceApiHandler.checkDeviceStatus(context, deviceIdString)
+    # p0 is context, v1 is deviceIdString from SharedPreferences
+    invoke-static {p0, v1}, Lcom/rtx/nextvproject/RTX/Network/DeviceApiHandler;->checkDeviceStatus(Landroid/content/Context;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v2 # v2 gets check_status_response
+
+    # Check response for errors
+    const-string v3, "\"status\":\"error\"" # v3 gets error_substring
+    invoke-virtual {v2, v3}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+    move-result v4 # v4 gets contains_error (boolean)
+
+    if-eqz v4, :cond_local_check_ok_startup # If contains_error (v4) is false (0), no error, proceed.
+
+    # Error found in local check response: Finish SplashRTX
+    invoke-virtual {p0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->finish()V
+    return-void
+
+    :cond_local_check_ok_startup
+    # No error, proceed to launch TvActivity
+    new-instance v2, Landroid/content/Intent; # v2 is now new Intent
+    # p0 is context
+    const-class v3, Lfr/nextv/atv/app/TvActivity; # v3 is now TvActivity.class
+    invoke-direct {v2, p0, v3}, Landroid/content/Intent;-><init>(Landroid/content/Context;Ljava/lang/Class;)V
+
+    invoke-virtual {p0, v2}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->startActivity(Landroid/content/Intent;)V
+    invoke-virtual {p0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->finish()V
 
     return-void
 .end method
@@ -294,44 +317,11 @@
 .end method
 
 .method continueWithAppLogic(Landroid/os/Bundle;)V
-    .locals 4 # Max register used is v3, so 4 locals
-    .param p1, "savedInstanceState"    # Landroid/os/Bundle;
+    .locals 0 # Method made empty for diagnostics
+    .param p1, "savedInstanceState"    # Landroid/os/Bundle; # p0 is 'this'
 
     .prologue
-    # Restoring HttpsGetTask and downImage calls.
-    # .locals 4 is already defined for the method.
-    # p0 is 'this' SplashRTX instance.
-    # p1 (savedInstanceState) is not used in this restored logic.
-
-    # Start HttpsGetTask
-    new-instance v0, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$HttpsGetTask;
-    const/4 v1, 0x0 # Second argument for HttpsGetTask constructor (SplashRTX$1)
-    invoke-direct {v0, p0, v1}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$HttpsGetTask;-><init>(Lcom/rtx/nextvproject/RTX/UI/SplashRTX;Lcom/rtx/nextvproject/RTX/UI/SplashRTX$1;)V
-
-    const/4 v1, 0x1 # Create a 1-element String array
-    new-array v1, v1, [Ljava/lang/String;
-
-    new-instance v2, Ljava/lang/StringBuilder;
-    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
-
-    # Get production API URL from mConfig
-    sget-object v3, Lcom/rtx/nextvproject/RTX/mConfig;->mApiUrl:Ljava/lang/String;
-    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    const-string v3, "api/dns.php"
-    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-    move-result-object v2
-
-    const/4 v3, 0x0 # Array index for the URL
-    aput-object v2, v1, v3
-
-    invoke-virtual {v0, v1}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$HttpsGetTask;->execute([Ljava/lang/Object;)Landroid/os/AsyncTask;
-
-    # Call downImage - Temporarily REMOVED for diagnostics
-    # invoke-virtual {p0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->downImage()V
-
+    # Method body is now empty for diagnostic purposes.
     return-void
 .end method
 
