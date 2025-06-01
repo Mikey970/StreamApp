@@ -2,6 +2,10 @@
 .super Ljava/lang/Object;
 .source "DeviceApiHandler.java" # Source can be nominal as it's Smali
 
+# static fields
+.field static final synthetic MALFORMED_URL_RESPONSE_JSON:Ljava/lang/String; = "{\"status\":\"error\",\"message\":\"Malformed URL\"}"
+.field static final synthetic IO_EXCEPTION_RESPONSE_JSON:Ljava/lang/String; = "{\"status\":\"error\",\"message\":\"IO Exception during request\"}"
+.field static final synthetic GENERIC_ERROR_RESPONSE_JSON:Ljava/lang/String; = "{\"status\":\"error\",\"message\":\"Generic error during request\"}"
 
 # direct methods
 .method public constructor <init>()V
@@ -11,161 +15,171 @@
 .end method
 
 .method public static checkDeviceStatus(Landroid/content/Context;Ljava/lang/String;)Ljava/lang/String;
-    .locals 10
-    .param p0, "context"    # Landroid/content/Context;
+    .locals 13 # Increased locals for registers needed
+    .param p0, "context"    # Landroid/content/Context; # Not used in this impl, but kept for signature
     .param p1, "deviceId"    # Ljava/lang/String;
 
-    const-string v_error_response, "{\"status\":\"error\",\"message\":\"Network request failed\"}"
-    const-string v_malformed_url_response, "{\"status\":\"error\",\"message\":\"Malformed URL\"}"
-    const-string v_io_exception_response, "{\"status\":\"error\",\"message\":\"IO Exception during request\"}"
-
-    . Předpokladáme, že URL je "http://your_domain_or_ip:5001/api/check_device_status?deviceId="
-    const-string v_base_url, "http://your_domain_or_ip:5001/api/check_device_status?deviceId=" # Placeholder URL
-
-    .registers 4
     .prologue
-    const/4 v_connection, 0x0 # HttpURLConnection
-    const/4 v_reader, 0x0     # BufferedReader
-    const/4 v_response_string_builder, 0x0 # StringBuilder for response
+    const/4 v11, 0x0 # Represents null for object types
 
-    :try_start_0
-    new-instance v_url_string_builder, Ljava/lang/StringBuilder;
-    invoke-direct {v_url_string_builder}, Ljava/lang/StringBuilder;-><init>()V
+    # Registers:
+    # v0: base_url_string
+    # v1: string_builder_url
+    # v2: final_url_string
+    # v3: url_object
+    # v4: http_connection
+    # v5: response_code (int)
+    # v6: input_stream_reader / error_stream_reader
+    # v7: buffered_reader
+    # v8: response_string_builder
+    # v9: line_from_reader
+    # v10: final_response_string / temp for static error strings
+    # v12: exception_object (for catch blocks)
 
-    invoke-virtual {v_url_string_builder, v_base_url}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    invoke-virtual {v_url_string_builder, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    invoke-virtual {v_url_string_builder}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-    move-result-object v_url_string
+    .locals 13 # Corrected .locals declaration
 
-    new-instance v_url, Ljava/net/URL;
-    invoke-direct {v_url, v_url_string}, Ljava/net/URL;-><init>(Ljava/lang/String;)V
+    const-string v0, "http://your_domain_or_ip:5001/api/check_device_status?deviceId="
 
-    invoke-virtual {v_url}, Ljava/net/URL;->openConnection()Ljava/net/URLConnection;
-    move-result-object v_url_connection
-    check-cast v_url_connection, Ljava/net/HttpURLConnection;
-    move-object v_connection, v_url_connection
+    move-object v4, v11 # Initialize http_connection to null
+    move-object v7, v11 # Initialize buffered_reader to null
 
-    const-string v_method_get, "GET"
-    invoke-virtual {v_connection, v_method_get}, Ljava/net/HttpURLConnection;->setRequestMethod(Ljava/lang/String;)V
+    :try_start_setup
+    new-instance v1, Ljava/lang/StringBuilder;
+    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
 
-    const/16 v_timeout_connect, 0x3a98 # 15 seconds connect timeout
-    invoke-virtual {v_connection, v_timeout_connect}, Ljava/net/HttpURLConnection;->setConnectTimeout(I)V
+    invoke-virtual {v1, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v1
+    invoke-virtual {v1, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v1
+    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v2
 
-    const/16 v_timeout_read, 0x3a98 # 15 seconds read timeout
-    invoke-virtual {v_connection, v_timeout_read}, Ljava/net/HttpURLConnection;->setReadTimeout(I)V
+    new-instance v3, Ljava/net/URL;
+    invoke-direct {v3, v2}, Ljava/net/URL;-><init>(Ljava/lang/String;)V
+    :try_end_setup
+    .catch Ljava/net/MalformedURLException; {:try_start_setup .. :try_end_setup} :catch_malformed_url
+    .catch Ljava/io/IOException; {:try_start_setup .. :try_end_setup} :catch_io_exception_generic
+    .catchall {:try_start_setup .. :try_end_setup} :catchall_cleanup # Generic catchall for setup phase
 
-    invoke-virtual {v_connection}, Ljava/net/HttpURLConnection;->getResponseCode()I
-    move-result v_response_code
+    :try_start_http
+    invoke-virtual {v3}, Ljava/net/URL;->openConnection()Ljava/net/URLConnection;
+    move-result-object v0 # Using v0 temporarily for URLConnection
+    check-cast v0, Ljava/net/HttpURLConnection;
+    move-object v4, v0 # v4 is HttpURLConnection
 
-    const/16 v_http_ok, 0xc8 # 200
-    const/16 v_http_not_found, 0x194 # 404
+    const-string v1, "GET"
+    invoke-virtual {v4, v1}, Ljava/net/HttpURLConnection;->setRequestMethod(Ljava/lang/String;)V
 
-    if-eq v_response_code, v_http_ok, :cond_read_stream
-    if-ne v_response_code, v_http_not_found, :cond_handle_error_stream
+    const/16 v1, 0x3a98 # 15000 ms timeout
+    invoke-virtual {v4, v1}, Ljava/net/HttpURLConnection;->setConnectTimeout(I)V
+    invoke-virtual {v4, v1}, Ljava/net/HttpURLConnection;->setReadTimeout(I)V
 
-    :cond_read_stream
-    new-instance v_input_stream_reader, Ljava/io/InputStreamReader;
-    invoke-virtual {v_connection}, Ljava/net/HttpURLConnection;->getInputStream()Ljava/io/InputStream;
-    move-result-object v_input_stream
-    invoke-direct {v_input_stream_reader, v_input_stream}, Ljava/io/InputStreamReader;-><init>(Ljava/io/InputStream;)V
-    goto :cond_setup_reader
+    invoke-virtual {v4}, Ljava/net/HttpURLConnection;->getResponseCode()I
+    move-result v5 # v5 is response_code
 
-    :cond_handle_error_stream
-    # Attempt to read error stream for more details if not 200 or 404
-    new-instance v_input_stream_reader, Ljava/io/InputStreamReader;
-    invoke-virtual {v_connection}, Ljava/net/HttpURLConnection;->getErrorStream()Ljava/io/InputStream;
-    move-result-object v_error_stream
-    invoke-direct {v_input_stream_reader, v_error_stream}, Ljava/io/InputStreamReader;-><init>(Ljava/io/InputStream;)V
-    # Fall-through to setup reader, then it will read whatever stream was provided
+    const/16 v0, 0xc8  # HTTP_OK = 200
+    const/16 v1, 0x194 # HTTP_NOT_FOUND = 404
 
-    :cond_setup_reader
-    new-instance v_buffered_reader, Ljava/io/BufferedReader;
-    invoke-direct {v_buffered_reader, v_input_stream_reader}, Ljava/io/BufferedReader;-><init>(Ljava/io/Reader;)V
-    move-object v_reader, v_buffered_reader
+    if-eq v5, v0, :cond_read_success_stream
+    if-ne v5, v1, :cond_read_error_stream
 
-    new-instance v_string_builder_local, Ljava/lang/StringBuilder;
-    invoke-direct {v_string_builder_local}, Ljava/lang/StringBuilder;-><init>()V
-    move-object v_response_string_builder, v_string_builder_local
+    :cond_read_success_stream # Also for 404, as it has a body
+    new-instance v6, Ljava/io/InputStreamReader;
+    invoke-virtual {v4}, Ljava/net/HttpURLConnection;->getInputStream()Ljava/io/InputStream;
+    move-result-object v0
+    invoke-direct {v6, v0}, Ljava/io/InputStreamReader;-><init>(Ljava/io/InputStream;)V
+    goto :finish_stream_reading_setup
 
-    :goto_read_line
-    invoke-virtual {v_reader}, Ljava/io/BufferedReader;->readLine()Ljava/lang/String;
-    move-result-object v_line
-    if-eqz v_line, :cond_end_read_line
+    :cond_read_error_stream # For other error codes that might have a body
+    invoke-virtual {v4}, Ljava/net/HttpURLConnection;->getErrorStream()Ljava/io/InputStream;
+    move-result-object v0
+    if-eqz v0, :return_generic_error_on_no_error_stream # No error stream, return generic error
+    new-instance v6, Ljava/io/InputStreamReader;
+    invoke-direct {v6, v0}, Ljava/io/InputStreamReader;-><init>(Ljava/io/InputStream;)V
+    goto :finish_stream_reading_setup
 
-    invoke-virtual {v_response_string_builder, v_line}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    goto :goto_read_line
+    :return_generic_error_on_no_error_stream
+    sget-object v10, Lcom/rtx/nextvproject/RTX/Network/DeviceApiHandler;->GENERIC_ERROR_RESPONSE_JSON:Ljava/lang/String;
+    goto :cleanup_and_return # Jumps to cleanup with v10 set
 
-    :cond_end_read_line
-    invoke-virtual {v_response_string_builder}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-    move-result-object v_final_response
-    :try_end_0
-    .catch Ljava/net/MalformedURLException; {:try_start_0 .. :try_end_0} :catch_malformed_url_exception
-    .catch Ljava/io/IOException; {:try_start_0 .. :try_end_0} :catch_io_exception
-    .catchall {:try_start_0 .. :try_end_0} :catchall_0 # Ensure streams are closed
+    :finish_stream_reading_setup
+    new-instance v0, Ljava/io/BufferedReader; # v0 for BufferedReader temp
+    invoke-direct {v0, v6}, Ljava/io/BufferedReader;-><init>(Ljava/io/Reader;)V
+    move-object v7, v0 # v7 is BufferedReader
 
-    # Cleanup for successful or error stream read case
-    if-eqz v_reader, :cond_reader_null_after_try
-    :try_start_1
-    invoke-virtual {v_reader}, Ljava/io/BufferedReader;->close()V
-    :try_end_1
-    .catch Ljava/io/IOException; {:try_start_1 .. :try_end_1} :catch_reader_close_exception_ignored
-    :catch_reader_close_exception_ignored
-    :cond_reader_null_after_try
+    new-instance v8, Ljava/lang/StringBuilder;
+    invoke-direct {v8}, Ljava/lang/StringBuilder;-><init>()V
 
-    if-eqz v_connection, :cond_conn_null_after_try
-    invoke-virtual {v_connection}, Ljava/net/HttpURLConnection;->disconnect()V
-    :cond_conn_null_after_try
-    return-object v_final_response
+    :goto_read_loop
+    invoke-virtual {v7}, Ljava/io/BufferedReader;->readLine()Ljava/lang/String;
+    move-result-object v9
+    if-eqz v9, :label_done_reading
 
+    invoke-virtual {v8, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    goto :goto_read_loop
 
-    :catchall_0
-    move-exception v_exception_all
-    # Ensure streams are closed in case of any throwable
-    if-eqz v_reader, :cond_reader_null_in_catchall
-    :try_start_2
-    invoke-virtual {v_reader}, Ljava/io/BufferedReader;->close()V
-    :try_end_2
-    .catch Ljava/io/IOException; {:try_start_2 .. :try_end_2} :catch_reader_close_exception_all_ignored
-    :catch_reader_close_exception_all_ignored
-    :cond_reader_null_in_catchall
+    :label_done_reading
+    invoke-virtual {v8}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v10 # v10 is the final response
+    :try_end_http
+    .catch Ljava/net/MalformedURLException; {:try_start_http .. :try_end_http} :catch_malformed_url # Should not happen here if setup passed
+    .catch Ljava/io/IOException; {:try_start_http .. :try_end_http} :catch_io_exception
+    .catchall {:try_start_http .. :try_end_http} :catchall_cleanup
 
-    if-eqz v_connection, :cond_conn_null_in_catchall
-    invoke-virtual {v_connection}, Ljava/net/HttpURLConnection;->disconnect()V
-    :cond_conn_null_in_catchall
-    throw v_exception_all # Rethrow the original exception
+    # Successful read or error stream read, proceed to cleanup
+    goto :cleanup_and_return
 
 
-    :catch_malformed_url_exception
-    # move-exception v_exception_malformed_url (already in v_exception_all if using catchall)
-    # Log.e("DeviceApiHandler", "Malformed URL Exception", v_exception_malformed_url)
-    if-eqz v_reader, :cond_reader_null_malformed
-    :try_start_3
-    invoke-virtual {v_reader}, Ljava/io/BufferedReader;->close()V
-    :try_end_3
-    .catch Ljava/io/IOException; {:try_start_3 .. :try_end_3} :catch_malformed_reader_close_ignored
-    :catch_malformed_reader_close_ignored
-    :cond_reader_null_malformed
-
-    if-eqz v_connection, :cond_conn_null_malformed
-    invoke-virtual {v_connection}, Ljava/net/HttpURLConnection;->disconnect()V
-    :cond_conn_null_malformed
-    return-object v_malformed_url_response
-
+    # Exception Handlers
+    :catch_malformed_url
+    move-exception v12
+    sget-object v10, Lcom/rtx/nextvproject/RTX/Network/DeviceApiHandler;->MALFORMED_URL_RESPONSE_JSON:Ljava/lang/String;
+    goto :cleanup_and_return
 
     :catch_io_exception
-    # move-exception v_exception_io (already in v_exception_all if using catchall)
-    # Log.e("DeviceApiHandler", "IO Exception", v_exception_io)
-    if-eqz v_reader, :cond_reader_null_io
-    :try_start_4
-    invoke-virtual {v_reader}, Ljava/io/BufferedReader;->close()V
-    :try_end_4
-    .catch Ljava/io/IOException; {:try_start_4 .. :try_end_4} :catch_io_reader_close_ignored
-    :catch_io_reader_close_ignored
-    :cond_reader_null_io
+    move-exception v12
+    sget-object v10, Lcom/rtx/nextvproject/RTX/Network/DeviceApiHandler;->IO_EXCEPTION_RESPONSE_JSON:Ljava/lang/String;
+    goto :cleanup_and_return
 
-    if-eqz v_connection, :cond_conn_null_io
-    invoke-virtual {v_connection}, Ljava/net/HttpURLConnection;->disconnect()V
-    :cond_conn_null_io
-    return-object v_io_exception_response
+    :catch_io_exception_generic # For IOExceptions during setup (e.g. URL constructor if it threw IO)
+    move-exception v12
+    sget-object v10, Lcom/rtx/nextvproject/RTX/Network/DeviceApiHandler;->IO_EXCEPTION_RESPONSE_JSON:Ljava/lang/String;
+    # v4 (connection) and v7 (reader) are null here as exception happened before they are assigned
+    return-object v10 # Directly return as nothing to clean up from HTTP phase
+
+    :catchall_cleanup
+    move-exception v12
+    # This is a generic catch-all; ensure resources are cleaned up.
+    # We don't have a specific response for this, so let it propagate or set a generic error.
+    # For simplicity here, we'll set a generic error if v10 wasn't already set by a more specific catch.
+    # However, if v10 is already set (e.g. by a handled MalformedURLException that then goes to cleanup), we should keep it.
+    # This catchall is mainly for unexpected errors to ensure cleanup.
+    # If an actual error occurred and was caught by specific handlers, v10 would be set.
+    # If it's an unexpected Throwable not caught by others, v10 might be null.
+    if-nez v10, :cond_v10_already_set_in_catchall
+    sget-object v10, Lcom/rtx/nextvproject/RTX/Network/DeviceApiHandler;->GENERIC_ERROR_RESPONSE_JSON:Ljava/lang/String;
+    :cond_v10_already_set_in_catchall
+    # Fall through to cleanup_and_return. Note: if we want to rethrow, 'throw v12' would be here.
+    # For this function signature, we must return a string.
+
+    # Cleanup Block (common exit point)
+    :cleanup_and_return
+    if-eqz v7, :cond_reader_already_null
+    :try_start_close_reader
+    invoke-virtual {v7}, Ljava/io/BufferedReader;->close()V
+    :try_end_close_reader
+    .catch Ljava/io/IOException; {:try_start_close_reader .. :try_end_close_reader} :ignore_reader_close_exception
+    :cond_reader_already_null
+    :ignore_reader_close_exception # Label to jump to, ignoring close exception
+
+    if-eqz v4, :cond_connection_already_null
+    invoke-virtual {v4}, Ljava/net/HttpURLConnection;->disconnect()V
+    :cond_connection_already_null
+
+    # If v10 (response string) is somehow null at this point (e.g. logic error), return generic error
+    if-nez v10, :cond_v10_is_set
+    sget-object v10, Lcom/rtx/nextvproject/RTX/Network/DeviceApiHandler;->GENERIC_ERROR_RESPONSE_JSON:Ljava/lang/String;
+    :cond_v10_is_set
+    return-object v10
 
 .end method
