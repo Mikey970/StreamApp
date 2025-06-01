@@ -208,25 +208,48 @@
     # p0 is SplashRTX context. v1 is deviceIdString.
     # .locals 5 is defined. v0,v1,v2 used for SP. v2,v3,v4 available for use here.
 
+    .local v0, "prefs":Landroid/content/SharedPreferences;
+    .local v1, "deviceIdString":Ljava/lang/String;
+    .local v2, "check_status_response":Ljava/lang/String; # Will hold response or be overwritten by intent
+    .local v3, "status_check_string":Ljava/lang/String;
+    .local v4, "status_flag":Z
+
+    :try_start_check_status
     # Call DeviceApiHandler.checkDeviceStatus(context, deviceIdString)
     # p0 is context, v1 is deviceIdString from SharedPreferences
     invoke-static {p0, v1}, Lcom/rtx/nextvproject/RTX/Network/DeviceApiHandler;->checkDeviceStatus(Landroid/content/Context;Ljava/lang/String;)Ljava/lang/String;
     move-result-object v2 # v2 gets check_status_response
 
-    # Check response for errors
-    const-string v3, "\"status\":\"error\"" # v3 gets error_substring
-    invoke-virtual {v2, v3}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
-    move-result v4 # v4 gets contains_error (boolean)
-
-    if-eqz v4, :cond_local_check_ok_startup # If contains_error (v4) is false (0), no error, proceed.
-
-    # Error found in local check response: Finish SplashRTX
+    # Null check for response
+    if-nez v2, :cond_response_not_null
+    # Log error (conceptual, Smali logging is verbose)
+    # const-string v3, "SplashRTX"
+    # const-string v4, "Device status check returned null response."
+    # invoke-static {v3, v4}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
     invoke-virtual {p0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->finish()V
     return-void
 
+    :cond_response_not_null
+    # Check response for "status":"active"
+    const-string v3, "\"status\":\"active\"" # v3 gets status_active_substring
+    invoke-virtual {v2, v3}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+    move-result v4 # v4 gets contains_active (boolean)
+
+    if-nez v4, :cond_local_check_ok_startup # If contains_active (v4) is true (non-zero), proceed.
+
+    # Status is not active or error in response: Finish SplashRTX
+    # Log error (conceptual)
+    # const-string v3, "SplashRTX"
+    # const-string v4, "Device status not active or error in response."
+    # invoke-static {v3, v4}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
+    invoke-virtual {p0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->finish()V
+    return-void
+    .catch Ljava/lang/Exception; {:try_start_check_status .. :try_end_check_status} :catch_status_exception
+
     :cond_local_check_ok_startup
-    # No error, proceed to launch TvActivity
-    new-instance v2, Landroid/content/Intent; # v2 is now new Intent
+    # Status is active, proceed to launch TvActivity
+    new-instance v2, Landroid/content/Intent; # v2 is now new Intent (reusing register)
+    .catch Ljava/lang/Exception; {:try_start_check_status .. :try_end_check_status} :catch_status_exception
     # p0 is context
     const-class v3, Lfr/nextv/atv/app/TvActivity; # v3 is now TvActivity.class
     invoke-direct {v2, p0, v3}, Landroid/content/Intent;-><init>(Landroid/content/Context;Ljava/lang/Class;)V
@@ -234,6 +257,15 @@
     invoke-virtual {p0, v2}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->startActivity(Landroid/content/Intent;)V
     invoke-virtual {p0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->finish()V
 
+    return-void
+
+    :catch_status_exception
+    move-exception v0 # Using v0 for exception as other locals might be in use by try block
+    # Log error (conceptual)
+    # const-string v1, "SplashRTX"
+    # const-string v2, "Exception during device status check."
+    # invoke-static {v1, v2, v0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+    invoke-virtual {p0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->finish()V
     return-void
 .end method
 
