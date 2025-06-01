@@ -293,39 +293,7 @@
     .param p1, "savedInstanceState"    # Landroid/os/Bundle;
 
     .prologue
-    # Application specific logic starts here
-    # HttpsGetTask and downImage calls were already here from a previous refactoring.
-    # We are removing super.onCreate, setContentView, and static field inits from this method.
-
-    new-instance v0, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$HttpsGetTask;
-
-    const/4 v1, 0x0
-    invoke-direct {v0, p0, v1}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$HttpsGetTask;-><init>(Lcom/rtx/nextvproject/RTX/UI/SplashRTX;Lcom/rtx/nextvproject/RTX/UI/SplashRTX$1;)V
-
-    const/4 v1, 0x1
-    new-array v1, v1, [Ljava/lang/String;
-
-    new-instance v2, Ljava/lang/StringBuilder;
-
-    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
-
-    sget-object v3, Lcom/rtx/nextvproject/RTX/mConfig;->mApiUrl:Ljava/lang/String; # Using v3 for mApiUrl
-    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v2 # Re-assign to v2 as append returns the builder
-
-    const-string v3, "api/dns.php" # Using v3 for "api/dns.php" string
-    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v2 # Re-assign to v2
-
-    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-    move-result-object v2 # v2 now holds the final URL string
-
-    const/4 v3, 0x0 # Using v3 for the integer 0 (array index)
-    aput-object v2, v1, v3 # Store final URL string (v2) into String array (v1) at index 0 (v3)
-
-    invoke-virtual {v0, v1}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$HttpsGetTask;->execute([Ljava/lang/Object;)Landroid/os/AsyncTask;
-
-    invoke-virtual {p0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->downImage()V
+    # Temporarily removed HttpsGetTask and downImage calls for debugging.
 
     return-void
 .end method
