@@ -246,89 +246,85 @@
 .end method
 
 .method private showDeviceIdDialog()V
-    .locals 8 # Example number of locals, adjust as needed
+    .registers 7
 
-    # This is where the complex Smali for AlertDialog creation would go.
-    # It's highly complex to write this directly in Smali without proper tooling and R.java access.
+    .prologue
+    .line 100
+    new-instance v0, Landroid/widget/EditText;
 
-    # Conceptual steps:
-    # 1. Create AlertDialog.Builder
-    #    new-instance v_dialog_builder, Landroid/app/AlertDialog$Builder;
-    #    invoke-direct {v_dialog_builder, p0}, Landroid/app/AlertDialog$Builder;-><init>(Landroid/content/Context;)V
+    invoke-direct {v0, p0}, Landroid/widget/EditText;-><init>(Landroid/content/Context;)V
 
-    # 2. Inflate custom view (dialog_set_device_id.xml)
-    #    const-string v_inflater_service, "layout_inflater"
-    #    invoke-virtual {p0, v_inflater_service}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->getSystemService(Ljava/lang/String;)Ljava/lang/Object;
-    #    move-result-object v_layout_inflater
-    #    check-cast v_layout_inflater, Landroid/view/LayoutInflater;
-    #    const v_layout_id, 0x7f0layoutXXXX # Placeholder for R.layout.dialog_set_device_id
-    #    const/4 v_null_root, 0x0
-    #    invoke-virtual {v_layout_inflater, v_layout_id, v_null_root}, Landroid/view/LayoutInflater;->inflate(ILandroid/view/ViewGroup;)Landroid/view/View;
-    #    move-result-object v_dialog_view
+    .line 101
+    const-string v1, "Enter Device ID"
 
-    # 3. Get references to EditText (R.id.edit_text_device_id) and Buttons (R.id.button_save, R.id.button_cancel)
-    #    const v_edit_text_id, 0x7f0idYYYY # Placeholder for R.id.edit_text_device_id
-    #    invoke-virtual {v_dialog_view, v_edit_text_id}, Landroid/view/View;->findViewById(I)Landroid/view/View;
-    #    move-result-object v_edit_text_device_id
-    #    check-cast v_edit_text_device_id, Landroid/widget/EditText;
-    #    ... similar for buttons ...
+    invoke-virtual {v0, v1}, Landroid/widget/EditText;->setHint(Ljava/lang/CharSequence;)V
 
-    # 4. Set dialog title (R.string.device_id_popup_title) & message (R.string.device_id_popup_message)
-    #    const v_title_id, 0x7f0stringZZZZ # Placeholder for R.string.device_id_popup_title
-    #    invoke-virtual {v_dialog_builder, v_title_id}, Landroid/app/AlertDialog$Builder;->setTitle(I)Landroid/app/AlertDialog$Builder;
-    #    ... similar for message (or set it on a TextView within the custom layout) ...
+    .line 103
+    new-instance v1, Landroid/app/AlertDialog$Builder;
 
-    # 5. Set the custom view on the builder
-    #    invoke-virtual {v_dialog_builder, v_dialog_view}, Landroid/app/AlertDialog$Builder;->setView(Landroid/view/View;)Landroid/app/AlertDialog$Builder;
+    invoke-direct {v1, p0}, Landroid/app/AlertDialog$Builder;-><init>(Landroid/content/Context;)V
 
-    # 6. Create OnClickListener for Save button
-    #    - Get text from EditText.
-    #    - Validate (if empty, show Toast or error).
-    #    - Save to SharedPreferences:
-    #        const-string v_prefs_name_listener, "app_prefs"
-    #        const/4 v_mode_private_listener, 0x0
-    #        invoke-virtual {p0, v_prefs_name_listener, v_mode_private_listener}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->getSharedPreferences(Ljava/lang/String;I)Landroid/content/SharedPreferences;
-    #        move-result-object v_prefs_listener
-    #        invoke-interface {v_prefs_listener}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
-    #        move-result-object v_editor_listener
-    #        const-string v_key_device_id_listener, "device_id"
-    #        # v_text_from_edittext would hold the string from EditText
-    #        invoke-interface {v_editor_listener, v_key_device_id_listener, v_text_from_edittext}, Landroid/content/SharedPreferences$Editor;->putString(Ljava/lang/String;Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
-    #        invoke-interface {v_editor_listener}, Landroid/content/SharedPreferences$Editor;->apply()V
-    #    - Dismiss dialog.
-    #    - Call continueWithAppLogic:
-    #        const/4 v_bundle_null, 0x0 # Or retrieve original bundle if needed
-    #        invoke-direct {p0, v_bundle_null}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->continueWithAppLogic(Landroid/os/Bundle;)V
+    .line 104
+    const-string v2, "Set Device ID"
 
-    # 7. Create OnClickListener for Cancel button
-    #    - Dismiss dialog.
-    #    - (Optional: finish activity if ID is mandatory: invoke-virtual {p0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->finish()V)
+    invoke-virtual {v1, v2}, Landroid/app/AlertDialog$Builder;->setTitle(Ljava/lang/CharSequence;)Landroid/app/AlertDialog$Builder;
 
-    # 8. Set buttons on AlertDialog.Builder (using placeholder names for listeners)
-    #    const v_save_text_id, 0x7f0stringXXXX # Placeholder for R.string.button_save
-    #    invoke-virtual {v_dialog_builder, v_save_text_id, v_save_listener}, Landroid/app/AlertDialog$Builder;->setPositiveButton(ILandroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
-    #    const v_cancel_text_id, 0x7f0stringYYYY # Placeholder for R.string.button_cancel
-    #    invoke-virtual {v_dialog_builder, v_cancel_text_id, v_cancel_listener}, Landroid/app/AlertDialog$Builder;->setNegativeButton(ILandroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
+    move-result-object v1
 
-    # 9. Create and show the dialog
-    #    invoke-virtual {v_dialog_builder}, Landroid/app/AlertDialog$Builder;->create()Landroid/app/AlertDialog;
-    #    move-result-object v_alert_dialog
-    #    const/4 v_false_val, 0x0 # for setCancelable
-    #    invoke-virtual {v_alert_dialog, v_false_val}, Landroid/app/AlertDialog;->setCancelable(Z)V # Not cancelable by back press
-    #    invoke-virtual {v_alert_dialog}, Landroid/app/AlertDialog;->show()V
+    .line 105
+    const-string v2, "Please enter a unique device ID for this device."
 
-    # Due to complexity, this is a placeholder. Actual implementation is required.
-    # For now, to prevent app from proceeding without ID, we can finish it if dialog is needed but not fully implemented.
-    # This is a fallback for this non-implementable part.
-    const-string v0, "Dialog"
-    const-string v1, "Device ID dialog should be shown here. Implementation is complex in Smali."
-    invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
-    invoke-virtual {p0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->finish()V # Exit app if dialog needed but not shown
+    invoke-virtual {v1, v2}, Landroid/app/AlertDialog$Builder;->setMessage(Ljava/lang/CharSequence;)Landroid/app/AlertDialog$Builder;
 
+    move-result-object v1
+
+    .line 106
+    invoke-virtual {v1, v0}, Landroid/app/AlertDialog$Builder;->setView(Landroid/view/View;)Landroid/app/AlertDialog$Builder;
+
+    move-result-object v1
+
+    .line 108
+    const-string v2, "Save"
+
+    new-instance v3, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$2;
+
+    invoke-direct {v3, p0, v0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$2;-><init>(Lcom/rtx/nextvproject/RTX/UI/SplashRTX;Landroid/widget/EditText;)V
+
+    invoke-virtual {v1, v2, v3}, Landroid/app/AlertDialog$Builder;->setPositiveButton(Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
+
+    move-result-object v1
+
+    .line 109
+    const-string v2, "Cancel"
+
+    new-instance v3, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$3;
+
+    invoke-direct {v3, p0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$3;-><init>(Lcom/rtx/nextvproject/RTX/UI/SplashRTX;)V
+
+    invoke-virtual {v1, v2, v3}, Landroid/app/AlertDialog$Builder;->setNegativeButton(Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
+
+    move-result-object v1
+
+    .line 110
+    const/4 v2, 0x0
+
+    invoke-virtual {v1, v2}, Landroid/app/AlertDialog$Builder;->setCancelable(Z)Landroid/app/AlertDialog$Builder;
+
+    move-result-object v1
+
+    .line 112
+    invoke-virtual {v1}, Landroid/app/AlertDialog$Builder;->create()Landroid/app/AlertDialog;
+
+    move-result-object v1
+
+    .line 113
+    invoke-virtual {v1}, Landroid/app/AlertDialog;->show()V
+
+    .line 114
     return-void
 .end method
 
-.method private continueWithAppLogic(Landroid/os/Bundle;)V
+.method continueWithAppLogic(Landroid/os/Bundle;)V
     .locals 4 # Increased to 4 for v3
     .param p1, "savedInstanceState"    # Landroid/os/Bundle;
 
