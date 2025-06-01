@@ -204,13 +204,20 @@
     return-void
 
 :cond_proceed_original_logic
-    # Restoring call to continueWithAppLogic, but with a null Bundle argument.
-    # p0 is 'this' SplashRTX instance.
-    # p1 is the original Bundle from onCreate, which we are NOT passing here.
+    # Bypassing continueWithAppLogic, directly launching TvActivity and finishing SplashRTX.
+    # p0 is 'this' SplashRTX activity.
+    # .locals 5 is defined for the method. v0, v1, v2 were used for SharedPreferences.
+    # Reusing v0 and v1 for Intent creation.
 
-    const/4 v3, 0x0 # Using v3 for the null Bundle argument. .locals 5 is defined for the method.
+    new-instance v0, Landroid/content/Intent; # v0 for the new Intent
 
-    invoke-direct {p0, v3}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->continueWithAppLogic(Landroid/os/Bundle;)V
+    const-class v1, Lfr/nextv/atv/app/TvActivity; # v1 for TvActivity.class
+
+    invoke-direct {v0, p0, v1}, Landroid/content/Intent;-><init>(Landroid/content/Context;Ljava/lang/Class;)V
+
+    invoke-virtual {p0, v0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->startActivity(Landroid/content/Intent;)V
+
+    invoke-virtual {p0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->finish()V
 
     return-void
 .end method
