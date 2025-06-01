@@ -204,20 +204,12 @@
     return-void
 
 :cond_proceed_original_logic
-    # Bypassing continueWithAppLogic, directly launching TvActivity and finishing SplashRTX.
-    # p0 is 'this' SplashRTX activity.
-    # .locals 5 is defined for the method. v0, v1, v2 were used for SharedPreferences.
-    # Reusing v0 and v1 for Intent creation.
+    # If device_id is found, call continueWithAppLogic with a null Bundle.
+    # p0 is 'this' (SplashRTX instance).
+    # .locals 5 is defined for the method. v0,v1,v2 used for SP. v3 for null.
 
-    new-instance v0, Landroid/content/Intent; # v0 for the new Intent
-
-    const-class v1, Lfr/nextv/atv/app/TvActivity; # v1 for TvActivity.class
-
-    invoke-direct {v0, p0, v1}, Landroid/content/Intent;-><init>(Landroid/content/Context;Ljava/lang/Class;)V
-
-    invoke-virtual {p0, v0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->startActivity(Landroid/content/Intent;)V
-
-    invoke-virtual {p0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->finish()V
+    const/4 v3, 0x0 # Using v3 for the null Bundle argument.
+    invoke-direct {p0, v3}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->continueWithAppLogic(Landroid/os/Bundle;)V
 
     return-void
 .end method
@@ -306,7 +298,39 @@
     .param p1, "savedInstanceState"    # Landroid/os/Bundle;
 
     .prologue
-    # Temporarily removed HttpsGetTask and downImage calls for debugging.
+    # Restoring HttpsGetTask and downImage calls.
+    # .locals 4 is already defined for the method.
+    # p0 is 'this' SplashRTX instance.
+    # p1 (savedInstanceState) is not used in this restored logic.
+
+    # Start HttpsGetTask
+    new-instance v0, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$HttpsGetTask;
+    const/4 v1, 0x0 # Second argument for HttpsGetTask constructor (SplashRTX$1)
+    invoke-direct {v0, p0, v1}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$HttpsGetTask;-><init>(Lcom/rtx/nextvproject/RTX/UI/SplashRTX;Lcom/rtx/nextvproject/RTX/UI/SplashRTX$1;)V
+
+    const/4 v1, 0x1 # Create a 1-element String array
+    new-array v1, v1, [Ljava/lang/String;
+
+    new-instance v2, Ljava/lang/StringBuilder;
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+
+    # Get production API URL from mConfig
+    sget-object v3, Lcom/rtx/nextvproject/RTX/mConfig;->mApiUrl:Ljava/lang/String;
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    const-string v3, "api/dns.php"
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v2
+
+    const/4 v3, 0x0 # Array index for the URL
+    aput-object v2, v1, v3
+
+    invoke-virtual {v0, v1}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX$HttpsGetTask;->execute([Ljava/lang/Object;)Landroid/os/AsyncTask;
+
+    # Call downImage
+    invoke-virtual {p0}, Lcom/rtx/nextvproject/RTX/UI/SplashRTX;->downImage()V
 
     return-void
 .end method
